@@ -103,7 +103,7 @@ docker-compose up --build -d
 
 ## 项目结构
 
-````
+```
 .
 ├── main.py              # 应用入口、API 路由、数据库模型、鉴权逻辑
 ├── requirements.txt     # Python 依赖清单
