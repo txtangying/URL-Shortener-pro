@@ -8,13 +8,13 @@ from sqlalchemy.orm import sessionmaker, Session, relationship
 from pydantic import BaseModel
 from datetime import datetime, timedelta, timezone
 from typing import List, Optional
-import bcrypt  # ✅ 改为原生 bcrypt
+import bcrypt  # 改为原生 bcrypt
 import random
 import string
 import redis
 app = FastAPI()
 import os
-# 新的写法：默认去找名为 "redis" 的容器，如果在本地跑才用 127.0.0.1
+# 默认找名为 "redis" 的容器，如果在本地跑才用 127.0.0.1
 redis_host = os.getenv("REDIS_HOST", "redis")
 #redis_client = redis.Redis(host=redis_host, port=6379, db=0, decode_responses=True)
 
@@ -187,7 +187,6 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depend
     )
     return {"access_token": access_token, "token_type": "bearer"}
 
-
 # 3. 创建短链接 (需要登录鉴权)
 @app.post("/urls/", response_model=URLOut)
 def create_url(url: URLCreate, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
@@ -195,19 +194,17 @@ def create_url(url: URLCreate, current_user: User = Depends(get_current_user), d
     short_code = ''.join(random.choices(string.ascii_letters + string.digits, k=6))
 
     # 为了避免冲突，实际生产环境会查一下数据库有没有这个短码，如果有就重新生成，这里先忽略。
-    db_url = URL(original_url=url.original_url, short_code=short_code, owner_id=current_user.id)
+    db_url = URL(original_url=url.original_url,short_code=short_code, owner_id=current_user.id)
     db.add(db_url)
     db.commit()
     db.refresh(db_url)
     return db_url
-
 
 # 4. 查看我的短链接 (需要登录鉴权，体现 ORM 关联)
 @app.get("/my-urls/", response_model=List[URLOut])
 def read_my_urls(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     urls = db.query(URL).filter(URL.owner_id == current_user.id).all()
     return urls
-
 
 # 5. 根路径
 @app.get("/")
@@ -229,7 +226,7 @@ def redirect_url(short_code: str, db: Session = Depends(get_db)):
     if not db_url:
         raise HTTPException(status_code=404, detail="短链接不存在")
 
-    # 3. 写入 Redis 缓存，设置 1 小时过期
+    # 3. 写入 Redis 缓存
     cache.setex(short_code, 3600, db_url.original_url)
 
     from fastapi.responses import RedirectResponse

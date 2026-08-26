@@ -9,19 +9,19 @@
 - **Redis 缓存**：跳转请求优先查 Redis，命中则毫秒级返回；未命中回源数据库并自动写回缓存（TTL 1 小时）
 - **容器化部署**：Docker Compose 一键启动（API + Redis），healthcheck 保证启动顺序
 - **自动文档**：集成 Swagger UI 与 ReDoc，开箱即用
-- **接口联调**：Postman 完整流程联调（注册 → 登录 → 创建 → 跳转）
+- **接口联调**：Postman 完整流程联调（注册 → 登录 → 创建 → 跳转）；**利用 JMeter 进行 50 线程/500 样本并发压测，验证了 Redis 缓存前后的性能差异**
 
 ## 技术栈
 
-| 类别 | 技术 |
-|------|------|
-| 后端框架 | FastAPI |
-| 数据库 ORM | SQLAlchemy 2.0 |
-| 数据校验 | Pydantic V2 |
-| 缓存 | Redis 7 |
-| 鉴权 | JWT（python-jose）+ bcrypt |
-| 部署 | Docker / Docker Compose |
-| API 测试 | Postman / Swagger UI |
+| 类别 | 技术                            |
+|------|-------------------------------|
+| 后端框架 | FastAPI                       |
+| 数据库 ORM | SQLAlchemy 2.0                |
+| 数据校验 | Pydantic V2                   |
+| 缓存 | Redis 7                       |
+| 鉴权 | JWT（python-jose）+ bcrypt      |
+| 部署 | Docker / Docker Compose       |
+| API 测试 | Postman / Swagger UI / Jmeter |
 
 ## 快速开始
 

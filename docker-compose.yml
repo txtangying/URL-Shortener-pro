@@ -1,4 +1,7 @@
+version: "3.8"
+
 services:
+  # 1. Redis 服务
   redis:
     image: "redis:latest"
     ports:
@@ -6,23 +9,22 @@ services:
     volumes:
       - redis_data:/data
     command: redis-server --appendonly yes
-    healthcheck:      # 👈 新增健康检查
+    healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 5s
       timeout: 5s
       retries: 5
-
+  # 2. 后端 API 服务
   api:
     build: .
     ports:
       - "8000:8000"
     depends_on:
       redis:
-        condition: service_healthy   # 👈 保证 Redis 健康后才启动 API
+        condition: service_healthy
     environment:
       - REDIS_HOST=redis
     volumes:
       - .:/app
-
 volumes:
   redis_data:
