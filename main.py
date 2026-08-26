@@ -35,7 +35,7 @@ engine = create_engine(
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
-# ✅ 导入下面这两行是关键！
+# 导入下面这两行是关键！
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/token")
 
 # 初始化 FastAPI
