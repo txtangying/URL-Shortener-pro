@@ -77,7 +77,7 @@ class UserOut(BaseModel):
     id: int
     username: str
     email: str
-    # ✅ 修正为 Pydantic v2 的写法，避免警告
+    # 修正为 Pydantic v2 的写法，避免警告
     model_config = {"from_attributes": True}
 
 
@@ -106,7 +106,7 @@ def get_db():
         db.close()
 
 
-# ✅ 彻底替换掉 passlib 的代码，使用原生 bcrypt
+# 彻底替换掉 passlib 的代码，使用原生 bcrypt
 def verify_password(plain_password, hashed_password):
     return bcrypt.checkpw(plain_password.encode('utf-8'), hashed_password.encode('utf-8'))
 
@@ -126,7 +126,7 @@ def authenticate_user(db: Session, username: str, password: str):
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     to_encode = data.copy()
     if expires_delta:
-        # ✅ 修复 Python 3.14 中 datetime.utcnow() 废弃的告警
+        # 修复 Python 3.14 中 datetime.utcnow() 废弃的告警
         expire = datetime.now(timezone.utc) + expires_delta
     else:
         expire = datetime.now(timezone.utc) + timedelta(minutes=15)
@@ -135,7 +135,7 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     return encoded_jwt
 
 
-# ✅ 修复 get_current_user 的依赖项，现在它可以从 header 提取 Bearer Token 了
+# 修复 get_current_user 的依赖项，可以从 header 提取 Bearer Token
 async def get_current_user(db: Session = Depends(get_db), token: str = Depends(oauth2_scheme)):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
